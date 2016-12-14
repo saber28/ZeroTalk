@@ -1,6 +1,6 @@
 class Renderer extends marked.Renderer
 	image: (href, title, text) ->
-		return ("<code>![#{text}](#{href})</code>")
+		return ("![#{text}](#{href})")
 
 class Text
 	toColor: (text) ->
