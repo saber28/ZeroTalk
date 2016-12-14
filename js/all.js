@@ -972,7 +972,7 @@ jQuery.extend( jQuery.easing,
     }
 
     Renderer.prototype.image = function(href, title, text) {
-      return "<code>![" + text + "](" + href + ")</code>";
+      return "![" + text + "](" + href + ")";
     };
 
     return Renderer;
