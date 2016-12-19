@@ -1,6 +1,6 @@
-# ZeroTalk
-Decentralized forum demo.
+# ZeroTalk with optional images
+Decentralized forum demo with optional images.
 
 ## Screenshot
 
-![Screenshot](http://i.imgur.com/TnySC1c.png)
+![Screenshot](http://p1.bqimg.com/567571/8262b5fe0d451522.jpg)
