@@ -1,7 +1,8 @@
 {
  "files": {},
  "ignore": ".*",
-  "modified": 1436226671.535, 
+ "modified": 1436226671.535, 
+ "optional": ".*\\.(png|jpg|gif|txt|swf|bak)",
  "signs": {
     "1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT": "HMS7KltLokl44coJqRBPmGTGVpY48H2nbayXOsCo21J9DtwIUCf47O6WNJdW6WUgObV/NzHr0yiCWey6uDmxlLo="
  },
@@ -12,7 +13,9 @@
   "permission_rules": {
    ".*": {
     "files_allowed": "data.json",
-        "max_size": 20000
+    "files_allowed_optional": ".*\\.(png|jpg|gif|txt|swf|bak)",
+    "max_size": 20000,
+    "max_size_optional": 20000000
    },
       "bitid/.*@zeroid.bit": { "max_size": 40000 }, 
       "bitmsg/.*@zeroid.bit": { "max_size": 15000 }
