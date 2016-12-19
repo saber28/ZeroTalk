@@ -88,6 +88,23 @@ class User extends Class
 				data = {"next_topic_id": 1, "topic": [], "topic_vote": {}, "next_comment_id": 1, "comment": {}, "comment_vote": {}}
 			cb(data)
 
+	checkContentJson: (cb=null) ->
+		Page.cmd "fileGet", [@getPath(@hub)+"/content.json", false], (res) =>
+			content_json = JSON.parse(res)
+			if content_json.optional
+				return cb(true)
+
+			content_json.optional = "(?!avatar).*jpg"
+			Page.cmd "fileWrite", [@getPath(@hub)+"/content.json", Text.fileEncode(content_json)], (res_write) =>
+				cb(res_write)
+
+	fileWrite: (file_name, content_base64, cb=null) ->
+		if not content_base64
+			return cb?(null)
+
+		@checkContentJson =>
+			Page.cmd "fileWrite", [@getPath(@hub)+"/"+file_name, content_base64], (res_write) =>
+				cb?(res_write)
 
 	publishData: (data, cb) ->
 		inner_path = "data/users/#{Page.site_info.auth_address}/data.json"
