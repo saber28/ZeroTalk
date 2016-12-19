@@ -1,7 +1,3 @@
-class Renderer extends marked.Renderer
-	image: (href, title, text) ->
-		return ("![#{text}](#{href})")
-
 class Text
 	toColor: (text) ->
 		hash = 0
@@ -28,10 +24,10 @@ class Text
 	# Convert zeronet html links to relaitve
 	fixHtmlLinks: (text) ->
 		if window.is_proxy
-			back = text.replace(/href="http:\/\/(127.0.0.1|localhost):43110/g, 'href="http://zero')
+			back = text.replace(/="http:\/\/(127.0.0.1|localhost):43110/g, '="http://zero')
 			return back.replace(/http:\/\/zero\/([^\/]+\.bit)/g, "http://$1")  # Domain
 		else
-			return text.replace(/href="http:\/\/(127.0.0.1|localhost):43110/g, 'href="')
+			return text.replace(/="http:\/\/(127.0.0.1|localhost):43110/g, '="')
 
 
 	# Convert a single link to relative
