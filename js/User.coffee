@@ -91,13 +91,13 @@ class User extends Class
 	checkContent: (cb=null) ->
 		inner_path = "data/users/#{Page.site_info.auth_address}/content.json"
 		Page.cmd "fileGet", {"inner_path": inner_path, "required": false}, (res) =>
-			content_json = JSON.parse(res)
-			if content_json.optional
-				return cb(true)
-
-			content_json.optional = ".*\\.(png|jpg|gif|txt|swf|bak)"
-			Page.cmd "fileWrite", [inner_path, Text.fileEncode(content_json)], (res_write) =>
-				cb(res_write)
+			if res
+				content_json = JSON.parse(res)
+				if content_json.optional
+					return cb(true)
+				content_json.optional = ".*\\.(png|jpg|gif|txt|swf|bak)"
+				Page.cmd "fileWrite", [inner_path, unescape(encodeURIComponent(JSON.stringify(content_json)))], (res_write) =>
+					cb(res_write)
 
 
 	publishData: (data, cb) ->
