@@ -6,8 +6,8 @@
  "domain": "Talk.ZeroNetwork.bit",
  "files": {
   "css/all.css": {
-   "sha512": "1baeab2b22dca59d434800b5ffcbcf470520dc7f2eee7ee4a0a7ebc7e87468ef",
-   "size": 163041
+   "sha512": "f91aa9692272706e4d219939972cffa2a9a20ab66099fb8b24ee60e60c2929fa",
+   "size": 164580
   },
   "data-default/users/content-default.json": {
    "sha512": "c1642cc2922a74c3e74991f0194e2acc46dc5e003207a0028dad63c75c41a0ec",
@@ -34,19 +34,47 @@
    "size": 310
   },
   "index.html": {
-   "sha512": "b9e56fbd13e655ec08c51fafba16ad07c41fdecd27886793556057edb497f71c",
-   "size": 7757
+   "sha512": "8e205ea0a12826afe49e80592a4e94ac6c16bfaa5f6c7112085d9c249ad38e32",
+   "size": 8308
   },
   "js/all.js": {
-   "sha512": "d52ed295f5849693ad2fa04396e2510936b6d1b8abcfdb4570f786e2e92f8bab",
-   "size": 227837
+   "sha512": "dda3fdd5694cf7d2952460416d6d3646ed37c65ac412562f4bb3815a8f55dd9e",
+   "size": 231470
   },
-  "languages/hu_HU.json": {
-   "sha512": "9a8e6178a4a30a5879173529934fcc6f68bf32f10c27d08f0d87d28f970822b1",
-   "size": 1202
+  "languages/da.json": {
+   "sha512": "4947ef2bb4f4d9551561057ec7d6dea9e881d211ca7f9c0bec7f2dc7493fa2ec",
+   "size": 1219
+  },
+  "languages/fr.json": {
+   "sha512": "79a84ab9d2d7589ba88f07d4d63a4aa922ba08f890bb7a0f2e0addc3c781b9b8",
+   "size": 1234
+  },
+  "languages/hu.json": {
+   "sha512": "844c4036c6f8874d7ea82dd68e6337051099cd4674bed1ba647a0607ac878981",
+   "size": 1235
+  },
+  "languages/it.json": {
+   "sha512": "b3cad975a56f5226977a32047d0af2d8381176588040b31f4c4c4a6df1ed2fcb",
+   "size": 1265
+  },
+  "languages/pl.json": {
+   "sha512": "eb9d7572cf4c76ed71f1c4c15a766128203b574008ae5bfe6a12caefdbc033a6",
+   "size": 1623
+  },
+  "languages/uk.json": {
+   "sha512": "f4d991841471a155dcd48f492e5ec196f5a8630dd088ed3eaf0592e02da2c3b1",
+   "size": 1606
+  },
+  "languages/zh-tw.json": {
+   "sha512": "0e90a4bdcc5ef602050011b193d9038c766d2a72a0193118bd3bf0d0b80472d0",
+   "size": 1861
+  },
+  "languages/zh.json": {
+   "sha512": "2d6dd282ea98cde7c9463e085dd7a25674b4ca2e5038d7a2b471acc13aadef80",
+   "size": 1863
   }
  },
- "ignore": "((js|css)/(?!all.(js|css))|data/users/.*db|data/users/.*/.*|.*.py)",
+ "ignore": "((js|css)/(?!all.(js|css))|data/users/.*db|data/users/.*/.*|data/archived|.*.py)",
  "includes": {
   "data/users/content.json": {
    "signers": [],
@@ -54,7 +82,7 @@
   }
  },
  "inner_path": "content.json",
- "modified": 1479332094.372,
+ "modified": 1495534127,
  "postmessage_nonce_security": true,
  "settings": {
   "admin": "nofish",
@@ -65,12 +93,12 @@
   ]
  },
  "sign": [
-  78705863276140566526043447119699774979798118629924856253921216870930439782790,
-  24970072062396750030931811155449369282786409984270906024154901353105297792810
+  34570195314575724773194421641170479386596097819563278628113774150131154300723,
+  85654364444520478186506683007915265499527324850084136121532266661650383491804
  ],
- "signers_sign": "HG/6ljsXbej7laqD3JUGsa8IEgSGE+NZs2jg9reQ3vrlo0fTnoFESCNujVxRuY1ORor143LGSyjl8PkaRdU4gx8=",
+ "signers_sign": "G2/6ljsXbej7laqD3JUGsa8IEgSGE+NZs2jg9reQ3vrlXLgsYX67t9yRcqOuRnKxuC+4+XPo/XdVztlERvr9viI=",
  "signs": {
-  "1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT": "HOHLv0kUdd3iEacj6658ILDxB0hpS5ND/g1Z8JSXusl+QelydhZpINcEra61qNpsTBxqxpleE7tbkqG1J59YhZo="
+  "1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT": "G3tpNQ3SKc9VrTy0U7cYYrRRZCu95pKR9yn/9i2wfkfGMeFAdUyyHldpiPU8Zm3z9cMUulIenfN+QGJJCDgQBFc="
  },
  "signs_required": 1,
  "title": "ZeroTalk",
@@ -79,5 +107,5 @@
   "js/all.js"
  ],
  "viewport": "width=device-width, initial-scale=1.0",
- "zeronet_version": "0.5.0"
+ "zeronet_version": "0.5.5"
 }

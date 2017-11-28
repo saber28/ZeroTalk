@@ -26,7 +26,7 @@ class ZeroTalk extends ZeroFrame
 
 	# Wrapper websocket connection ready
 	onOpenWebsocket: (e) =>
-		@cmd "wrapperSetViewport", "width=device-width, initial-scale=1.0"
+		@cmd "wrapperSetViewport", "width=device-width, initial-scale=0.8"
 		@cmd "wrapperGetLocalStorage", [], (res) =>
 			res ?= {}
 			@local_storage = res
@@ -171,7 +171,14 @@ class ZeroTalk extends ZeroFrame
 					TopicShow.loadComments()
 				if $("body").hasClass("page-main") or $("body").hasClass("page-topics")
 					TopicList.loadTopics()
-
+		else if site_info.event?[0] == "cert_changed" and site_info.cert_user_id
+			# Auto click follow username mentions on cert change
+			TopicList.initFollowButton()
+			mentions_menu_elem = TopicList.follow.feeds["Username mentions"][1]
+			setTimeout ( =>
+				if not mentions_menu_elem.hasClass("selected")
+					mentions_menu_elem.trigger("click")
+			), 100
 
 
 	setSiteinfo: (site_info) =>

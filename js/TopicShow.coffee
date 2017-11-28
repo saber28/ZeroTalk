@@ -134,8 +134,7 @@ class TopicShow extends Class
 					elem = $(".comment.template").clone().removeClass("template").attr("id", "comment_"+comment_uri).data("topic_uri", @topic_uri)
 					if type != "noanim"
 						elem.cssSlideDown()
-					$(".reply", elem).on "click", (e) => # Reply link
-						return @buttonReply $(e.target).parents(".comment")
+					@applyCommentListeners(elem, comment)
 					$(".score", elem).attr("id", "comment_score_#{comment_uri}").on "click", @submitCommentVote # Submit vote
 				@applyCommentData(elem, comment)
 				elem.appendTo(".comments").removeAttr("missing")
@@ -159,6 +158,18 @@ class TopicShow extends Class
 			focused.focus()
 
 			if cb then cb()
+
+	applyCommentListeners: (elem, comment) ->
+		$(".reply", elem).on "click", (e) => # Reply link
+			return @buttonReply $(e.target).parents(".comment")
+
+		$(".menu_3dot", elem).on "click", =>
+			menu = new Menu($(".menu_3dot", elem))
+			menu.addItem "Mute this user", =>
+				elem.fancySlideUp()
+				Page.cmd "muteAdd", [comment.user_address, comment.user_name, "Comment: #{comment.body[0..20]}"]
+			menu.show()
+			return false
 
 
 	# Update elem based on data of comment dict
@@ -190,7 +201,11 @@ class TopicShow extends Class
 		body_add = "> [#{user_name}](\##{post_id}): "
 		elem_quote = $(".body", elem).clone()
 		$("blockquote", elem_quote).remove() # Remove other people's quotes
-		body_add+= elem_quote.text().trim("\n").replace(/\n/g, "\n> ")
+		selected_text = window.getSelection().toString()
+		if selected_text
+			body_add+= selected_text
+		else
+			body_add+= elem_quote.text().trim("\n").replace(/\n[\s\S]+/g, " [...]")
 		body_add+= "\n\n"
 
 
@@ -202,6 +217,8 @@ class TopicShow extends Class
 
 
 	submitComment: ->
+		if not @follow.feeds["Comments in this topic"][1].hasClass("selected")
+			@follow.feeds["Comments in this topic"][1].trigger "click"
 		body = $(".comment-new #comment_body").val().trim()
 		if not body
 			$(".comment-new #comment_body").focus()

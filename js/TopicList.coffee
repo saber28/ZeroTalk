@@ -2,7 +2,7 @@ class TopicList extends Class
 	constructor: ->
 		@thread_sorter = null
 		@parent_topic_uri = undefined
-		@list_all = false
+		@limit = 31
 		@topic_parent_uris = {}
 		@topic_sticky_uris = {}
 
@@ -28,6 +28,9 @@ class TopicList extends Class
 
 		# Show create new topic form
 		$(".topic-new-link").on "click", =>
+			if Page.site_info.address == "1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT"
+				$(".topmenu").css("background-color", "#fffede")
+				$(".topic-new .message").css("display", "block")
 			$(".topic-new").fancySlideDown()
 			$(".topic-new-link").slideUp()
 			return false
@@ -38,7 +41,7 @@ class TopicList extends Class
 			return false
 
 		$(".topics-more").on "click", =>
-			@list_all = true
+			@limit += 100
 			$(".topics-more").text("Loading...")
 			@loadTopics("noanim")
 			return false
@@ -62,7 +65,7 @@ class TopicList extends Class
 				WHERE parent_topic_uri IN (:params)
 			", true, @parent_topic_uri)
 		else
-			@follow.addFeed("New topics", "
+			@follow.addFeed(_("New topics"), "
 				SELECT
 				 title AS title,
 				 body,
@@ -119,7 +122,11 @@ class TopicList extends Class
 			where = "WHERE topic.type IS NULL AND topic.parent_topic_uri IS NULL"
 		last_elem = $(".topics-list .topic.template")
 
-		sql_sticky = ("WHEN '#{topic_uri}' THEN 1" for topic_uri in Page.site_info.content.settings.topic_sticky_uris).join(" ")
+		if Page.site_info.content.settings.topic_sticky_uris?.length > 0
+			sql_sticky_whens = ("WHEN '#{topic_uri}' THEN 1" for topic_uri in Page.site_info.content.settings.topic_sticky_uris).join(" ")
+			sql_sticky = "CASE topic.topic_id || '_' || topic_creator_content.directory #{sql_sticky_whens} ELSE 0 END AS sticky"
+		else
+			sql_sticky = "0 AS sticky"
 
 		query = """
 			SELECT
@@ -130,7 +137,7 @@ class TopicList extends Class
 			 topic.topic_id || '_' || topic_creator_content.directory AS row_topic_uri,
 			 NULL AS row_topic_sub_uri, NULL AS row_topic_sub_title,
 			 (SELECT COUNT(*) FROM topic_vote WHERE topic_vote.topic_uri = topic.topic_id || '_' || topic_creator_content.directory)+1 AS votes,
-			 CASE topic.topic_id || '_' || topic_creator_content.directory #{sql_sticky} ELSE 0 END AS sticky
+			 #{sql_sticky}
 			FROM topic
 			LEFT JOIN json AS topic_creator_json ON (topic_creator_json.json_id = topic.json_id)
 			LEFT JOIN json AS topic_creator_content ON (topic_creator_content.directory = topic_creator_json.directory AND topic_creator_content.file_name = 'content.json')
@@ -157,7 +164,7 @@ class TopicList extends Class
 				 topic_sub.topic_id || '_' || topic_sub_creator_content.directory AS row_topic_sub_uri,
 				 topic_sub.title AS topic_sub_title,
 				 (SELECT COUNT(*) FROM topic_vote WHERE topic_vote.topic_uri = topic.topic_id || '_' || topic_creator_content.directory)+1 AS votes,
-				 CASE topic.topic_id || '_' || topic_creator_content.directory #{sql_sticky} ELSE 0 END AS sticky
+				 #{sql_sticky}
 				FROM topic
 				LEFT JOIN json AS topic_creator_json ON (topic_creator_json.json_id = topic.json_id)
 				LEFT JOIN json AS topic_creator_content ON (topic_creator_content.directory = topic_creator_json.directory AND topic_creator_content.file_name = 'content.json')
@@ -171,8 +178,8 @@ class TopicList extends Class
 				HAVING last_action < #{Date.now()/1000+120}
 			"""
 
-		if not @list_all and not @parent_topic_uri
-			query += " ORDER BY sticky DESC, last_action DESC LIMIT 30"
+		if not @parent_topic_uri
+			query += " ORDER BY sticky DESC, last_action DESC LIMIT #{@limit}"
 
 
 		Page.cmd "dbQuery", [query], (topics) =>
@@ -184,8 +191,9 @@ class TopicList extends Class
 				if window.TopicList.topic_sticky_uris[b.row_topic_uri]
 					booster_b = window.TopicList.topic_sticky_uris[b.row_topic_uri]*10000000
 				return Math.max(b.last_comment+booster_b, b.last_added+booster_b)-Math.max(a.last_comment+booster_a, a.last_added+booster_a)
+			limited = false
 
-			for topic in topics
+			for topic, i in topics
 				topic_uri = topic.row_topic_uri
 				if topic.last_added
 					topic.added = topic.last_added
@@ -200,9 +208,13 @@ class TopicList extends Class
 					elem = $(".topics-list .topic.template").clone().removeClass("template").attr("id", "topic_"+topic_uri)
 					if type != "noanim" then elem.cssSlideDown()
 
-				elem.insertAfter(last_elem)
-				last_elem = elem
+					@applyTopicListeners(elem, topic)
 
+				if i + 1 < @limit
+					elem.insertAfter(last_elem)
+				else
+					limited = true
+				last_elem = elem
 
 				@applyTopicData(elem, topic)
 
@@ -236,13 +248,22 @@ class TopicList extends Class
 			else
 				$(".message-big").css("display", "none")
 
-			if topics.length == 30
+			if limited
 				$(".topics-more").css("display", "block")
 			else
 				$(".topics-more").css("display", "none")
 
 			if cb then cb()
 
+	applyTopicListeners: (elem, topic) ->
+		# User hide
+		$(".user_menu", elem).on "click", =>
+			menu = new Menu($(".user_menu", elem))
+			menu.addItem "Mute this user", =>
+				elem.fancySlideUp()
+				Page.cmd "muteAdd", [topic.topic_creator_address, topic.topic_creator_user_name, "Topic: #{topic.title}"]
+			menu.show()
+			return false
 
 
 	applyTopicData: (elem, topic, type="list") ->
@@ -285,9 +306,12 @@ class TopicList extends Class
 			if topic.type == "group"
 				$(".comment-num", elem).text "last activity"
 				$(".added", elem).text Time.since(last_action)
-			else if topic.comments_num > 0
+			else if topic.comments_num == 1
 				$(".comment-num", elem).text "#{topic.comments_num} comment"
-				$(".added", elem).text "last "+Time.since(last_action)
+				$(".added", elem).text "last " + Time.since(last_action)
+			else if topic.comments_num > 0
+				$(".comment-num", elem).text "#{topic.comments_num} comments"
+				$(".added", elem).text "last " + Time.since(last_action)
 			else
 				$(".comment-num", elem).text "0 comments"
 				$(".added", elem).text Time.since(last_action)
@@ -348,11 +372,15 @@ class TopicList extends Class
 		$(".topic-new .button-submit").addClass("loading")
 		User.getData (data) =>
 			topic = {
-				"topic_id": data.next_topic_id,
+				"topic_id": data.next_topic_id + Time.timestamp(),
 				"title": title,
 				"body": body,
 				"added": Time.timestamp()
 			}
+			# Check Chinese characters
+			if Page.site_info.address == "1TaLkFrMwvbNsooF4ioKAY9EuxTBTjipT" and (title + body).match(/[\u3400-\u9FBF]/)
+				topic.parent_topic_uri = "10_1J3rJ8ecnwH2EPYa6MrgZttBNc61ACFiCj"  # Auto create topic in separate sub-topic
+
 			if @parent_topic_uri then topic.parent_topic_uri = @parent_topic_uri
 			data.topic.push topic
 			data.next_topic_id += 1
@@ -361,7 +389,10 @@ class TopicList extends Class
 				$(".topic-new").slideUp()
 				$(".topic-new-link").slideDown()
 				setTimeout (=>
-					@loadTopics()
+					if topic.parent_topic_uri and @parent_topic_uri != topic.parent_topic_uri
+						window.top.location = "?Topics:" + topic.parent_topic_uri
+					else
+						@loadTopics()
 				), 600
 				$(".topic-new #topic_body").val("")
 				$(".topic-new #topic_title").val("")
