@@ -9,4 +9,4 @@ Decentralized forum demo with optional images.
 
 ## Screenshot
 
-![Screenshot](https://imgchr.com/i/iF0rUH)
+![Screenshot](https://s1.ax1x.com/2018/09/10/iF0rUH.png)
